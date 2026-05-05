@@ -11,6 +11,9 @@ const dayjs = require('dayjs');
  */
 function getDiscountRate(product) {
   // 請實作此函式
+  const {price, origin_price} = product;
+  const discount = price / origin_price;
+  return `${Math.round(discount * 10)}折`;
 }
 
 /**
@@ -20,6 +23,7 @@ function getDiscountRate(product) {
  */
 function getAllCategories(products) {
   // 請實作此函式
+  return [...new Set(products.map(product => product.category))];
 }
 
 /**
@@ -30,6 +34,8 @@ function getAllCategories(products) {
 function formatDate(timestamp) {
   // 請實作此函式
   // 提示：dayjs.unix...
+  const displayDate = dayjs.unix(timestamp).format('YYYY/MM/DD HH:mm');
+  return displayDate;
 }
 
 /**
@@ -43,6 +49,8 @@ function getDaysAgo(timestamp) {
   // 1. 用 dayjs() 取得今天
   // 2. 用 dayjs.unix(timestamp) 取得日期
   // 3. 用 .diff() 計算天數差異
+  const dayDiff = dayjs().diff(dayjs.unix(timestamp), 'day');
+  return dayDiff === 0 ? '今天' : `${dayDiff} 天前`;
 }
 
 /**
@@ -59,6 +67,15 @@ function getDaysAgo(timestamp) {
  */
 function validateOrderUser(data) {
   // 請實作此函式
+  const errors = [];
+  if (!data.name || data.name.trim() === '') errors.push('姓名不可為空');
+  const telRegex = /^09\d{8}$/;
+  if (!telRegex.test(data.tel)) errors.push('電話格式錯誤');
+  if (!data.email || !data.email.includes('@')) errors.push('Email 格式錯誤');
+  if (!data.address || data.address.trim() === '') errors.push('住址格式錯誤');
+  const validPayments = ['ATM', 'Credit Card', 'Apple Pay'];
+  if (!validPayments.includes(data.payment)) errors.push('付款方式錯誤');
+  return  { isValid: errors.length === 0, errors };
 }
 
 /**
@@ -73,6 +90,8 @@ function validateOrderUser(data) {
  */
 function validateCartQuantity(quantity) {
   // 請實作此函式
+  const isValid =  (Number.isInteger(quantity) && quantity >=1 && quantity <= 99 );
+  return isValid ? { isValid: true } : { isValid: false , error: '數量錯誤' };
 }
 
 /**
@@ -92,6 +111,7 @@ function validateCartQuantity(quantity) {
  */
 function formatCurrency(amount) {
   // 請實作此函式
+  return `NT$ ${amount.toLocaleString('zh-TW')}`;
 }
 
 module.exports = {
